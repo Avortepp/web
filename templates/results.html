@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Výsledky vyhledávání</title>
+</head>
+<body>
+    <h1>Výsledky vyhledávání</h1>
+    <div id="results"></div>
+    <a id="downloadLink" href="" download="results.csv">Stáhnout CSV</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('query');
+            fetch(`https://your-deployed-url/search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const results = data.map(result => 
+                        `Title: ${result.title}\nLink: ${result.link}\nDescription: ${result.description}\n`
+                    ).join('\n');
+                    
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.textContent = results;
+                    
+                    // Create CSV file
+                    const csvContent = "data:text/csv;charset=utf-8," 
+                        + data.map(result => [result.title, result.link, result.description].join(',')).join('\n');
+                    
+                    const encodedUri = encodeURI(csvContent);
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.setAttribute('href', encodedUri);
+                });
+        });
+    </script>
+</body>
+</html>
